@@ -3,23 +3,28 @@ defmodule AmazonHistory.CLI do
   Handle the command-line parsing for the amazon_history tool
   """
 
+  require Logger
+
   def run(argv) do
     argv
     |> parse_args
-    |> process
+    |> scrape
+    |> CSV.encode
+    |> Enum.each(&IO.write/1)
   end
 
-  def process(username: username, password: password) do
-    IO.puts("Will continue with username: #{username}, password: #{password}")
+  def scrape(email: email, password: password, start_year: start_year) do
+    Logger.debug("Will scrape with email: #{email}, password: ****")
+    AmazonHistory.Scraper.fetch(email, password, start_year)
   end
 
-  def process(_) do
-    IO.puts("Usage: --username <username> --password <password>")
+  def scrape(_) do
+    IO.puts(:stderr, "Usage: --email <email> --password <password> --start-year <start year>")
   end
 
   @doc """
   Options:
-  -u/--username: Amazon username
+  -e/--email: Amazon email
   -p/--password: Amazon password
   """
   def parse_args(argv) do
@@ -27,21 +32,27 @@ defmodule AmazonHistory.CLI do
       argv,
       switches: [
         help: :boolean,
-        username: :string,
-        password: :string
+        email: :string,
+        password: :string,
+        start_year: :integer,
       ],
       aliases: [
         h: :help,
-        u: :username,
-        p: :password
+        e: :email,
+        p: :password,
+        y: :start_year,
       ]
     )
     |> elem(0)
     |> args_to_internal_representation
   end
 
-  defp args_to_internal_representation(username: username, password: password) do
-    [username: username, password: password]
+  defp args_to_internal_representation(email: email, password: password, start_year: start_year) do
+    [email: email, password: password, start_year: start_year]
+  end
+
+  defp args_to_internal_representation(email: email, password: password) do
+    [email: email, password: password, start_year: 2000]
   end
 
   defp args_to_internal_representation(_) do

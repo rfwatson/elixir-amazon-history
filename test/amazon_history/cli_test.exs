@@ -9,9 +9,9 @@ defmodule CliTest do
       assert parse_args(["--help"]) == :help
     end
 
-    test ":help returned by passing only a username" do
-      assert parse_args(["-u", "rob"]) == :help
-      assert parse_args(["--username", "rob"]) == :help
+    test ":help returned by passing only a email" do
+      assert parse_args(["-e", "rob@netflux.io"]) == :help
+      assert parse_args(["--email", "rob@netflux.io"]) == :help
     end
 
     test ":help returned by passing only a password" do
@@ -20,10 +20,10 @@ defmodule CliTest do
     end
 
     test "arguments returned by passing valid parameters" do
-      assert parse_args(["-u", "rob", "-p", "hackme"]) == [username: "rob", password: "hackme"]
+      assert parse_args(["-e", "rob@netflux.io", "-p", "hackme"]) == [email: "rob@netflux.io", password: "hackme"]
 
-      assert parse_args(["--username", "rob", "--password", "hackme"]) == [
-               username: "rob",
+      assert parse_args(["--email", "rob@netflux.io", "--password", "hackme"]) == [
+               email: "rob@netflux.io",
                password: "hackme"
              ]
     end
